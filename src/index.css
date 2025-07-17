@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Clean + Organic Design System - Earthy Palette */
+    --background: 42 15% 97%; /* Soft sand tone */
+    --foreground: 20 14% 15%; /* Warm dark gray */
+
+    --card: 0 0% 100%; /* Pure white cards for contrast */
+    --card-foreground: 20 14% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 15%;
+
+    /* Sage green primary */
+    --primary: 136 25% 45%; /* Sage green */
+    --primary-foreground: 0 0% 98%;
+
+    /* Warm clay secondary */
+    --secondary: 25 35% 85%; /* Warm clay light */
+    --secondary-foreground: 20 14% 15%;
+
+    /* Soft neutrals */
+    --muted: 42 15% 94%; /* Light sand */
+    --muted-foreground: 20 8% 50%; /* Muted warm gray */
+
+    /* Muted gold accent */
+    --accent: 45 40% 70%; /* Muted gold */
+    --accent-foreground: 20 14% 15%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 42 15% 90%; /* Soft sand border */
+    --input: 42 15% 90%;
+    --ring: 136 25% 45%; /* Sage green ring */
+
+    --radius: 0.75rem; /* Softer, more organic radius */
+
+    /* Organic gradients and textures */
+    --gradient-organic: linear-gradient(135deg, hsl(136, 25%, 45%), hsl(25, 35%, 65%));
+    --gradient-warm: linear-gradient(180deg, hsl(42, 15%, 97%), hsl(42, 20%, 94%));
+    --shadow-organic: 0 10px 40px -10px hsl(136, 25%, 45%, 0.15);
+    --shadow-warm: 0 4px 20px -4px hsl(25, 35%, 65%, 0.2);
+
+    --sidebar-background: 42 15% 95%;
+    --sidebar-foreground: 20 14% 15%;
+    --sidebar-primary: 136 25% 45%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 42 15% 92%;
+    --sidebar-accent-foreground: 20 14% 15%;
+    --sidebar-border: 42 15% 88%;
+    --sidebar-ring: 136 25% 45%;
+  }
+
+  .dark {
+    /* Dark mode with warm organic tones */
+    --background: 20 14% 8%; /* Warm dark background */
+    --foreground: 42 15% 95%;
+
+    --card: 20 14% 12%; /* Slightly lighter warm dark */
+    --card-foreground: 42 15% 95%;
+
+    --popover: 20 14% 12%;
+    --popover-foreground: 42 15% 95%;
+
+    --primary: 136 30% 55%; /* Brighter sage for dark mode */
+    --primary-foreground: 20 14% 8%;
+
+    --secondary: 25 25% 20%; /* Darker warm clay */
+    --secondary-foreground: 42 15% 95%;
+
+    --muted: 20 14% 15%;
+    --muted-foreground: 42 8% 65%;
+
+    --accent: 45 35% 60%; /* Warmer gold for dark mode */
+    --accent-foreground: 20 14% 8%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 42 15% 95%;
+
+    --border: 20 14% 18%;
+    --input: 20 14% 18%;
+    --ring: 136 30% 55%;
+    
+    --sidebar-background: 20 14% 10%;
+    --sidebar-foreground: 42 15% 90%;
+    --sidebar-primary: 136 30% 55%;
+    --sidebar-primary-foreground: 20 14% 8%;
+    --sidebar-accent: 20 14% 15%;
+    --sidebar-accent-foreground: 42 15% 90%;
+    --sidebar-border: 20 14% 18%;
+    --sidebar-ring: 136 30% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  /* Organic shapes and animations */
+  .organic-border {
+    border-radius: 2rem 1rem 2rem 1rem;
+  }
+  
+  .organic-shadow {
+    box-shadow: var(--shadow-organic);
+  }
+  
+  .warm-shadow {
+    box-shadow: var(--shadow-warm);
+  }
+  
+  .gradient-organic {
+    background: var(--gradient-organic);
+  }
+  
+  .gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .smooth-transition {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+}
