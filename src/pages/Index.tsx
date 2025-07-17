@@ -35,7 +35,7 @@ const Index = () => {
                   Shop for Good
                 </Button>
               </Link>
-              <Link to="/profile">
+              <Link to="/login">
                 <Button variant="ghost" className="flex items-center smooth-transition hover:text-primary">
                   <User className="h-4 w-4 mr-2" />
                   Your Journey
