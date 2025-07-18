@@ -10,6 +10,9 @@ import Donations from "./pages/Donations";
 import Marketplace from "./pages/Marketplace";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import CharityProfile from "./pages/CharityProfile";
+
 
 const queryClient = new QueryClient();
 
@@ -20,6 +23,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/charity-profile" element={<CharityProfile />} />
           <Route path="/" element={<Index />} />
           <Route path="/posterboard" element={<PosterBoard />} />
           <Route path="/donations" element={<Donations />} />
