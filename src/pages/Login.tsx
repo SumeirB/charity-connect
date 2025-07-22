@@ -6,9 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { signUp } from "@/lib/auth";
+
 
 const Login = () => {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [name, setName] = useState("");
   const [userType, setUserType] = useState<string>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,6 +39,28 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+  
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await signUp(email, password, name);
+
+      if (userType === "charity") {
+        navigate("/charity-profile");
+      } else {
+        navigate("/profile");
+      }
+    } catch (error) {
+      console.error("Sign-up failed:", error);
+      alert("Error creating account. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-warm flex items-center justify-center px-4">
@@ -63,7 +89,7 @@ const Login = () => {
           </CardHeader>
           
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={mode === "login" ? handleLogin : handleSignUp} className="space-y-6">
               {/* User Type Selection */}
               <div className="space-y-2">
                 <Label htmlFor="userType" className="text-sm font-medium">
@@ -89,6 +115,25 @@ const Login = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/*Name - only for sign up*/}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-medium">
+                    Full Name
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required={mode === "signup"}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
 
               {/* Email */}
               <div className="space-y-2">
@@ -144,7 +189,13 @@ const Login = () => {
                 className="w-full"
                 disabled={isLoading || !email || !password}
               >
-                {isLoading ? "Signing In..." : "Sign In"}
+                {isLoading
+                  ? mode === "login"
+                    ? "Signing In..."
+                    : "Creating Account..."
+                  : mode === "login"
+                  ? "Sign In"
+                  : "Sign Up"}
               </Button>
 
               {/* Divider */}
@@ -160,9 +211,14 @@ const Login = () => {
               {/* Sign Up Link */}
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
-                  Don't have an account?{" "}
-                  <Button variant="link" className="p-0 h-auto font-medium text-primary">
-                    Create Account
+                  {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto font-medium text-primary"
+                    onClick={() => setMode(mode === "login" ? "signup" : "login")}
+                    type="button"
+                  >
+                    {mode === "login" ? "Create Account" : "Sign In"}
                   </Button>
                 </p>
               </div>
