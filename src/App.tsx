@@ -12,8 +12,7 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import CharityProfile from "./pages/CharityProfile";
-
-
+import ManageEvents from "@/pages/ManageEvents";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -30,6 +29,7 @@ const App = () => (
           <Route path="/donations" element={<Donations />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/manage-events" element={<ManageEvents />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

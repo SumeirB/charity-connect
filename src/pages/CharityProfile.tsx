@@ -132,7 +132,7 @@ const CharityProfile = () => {
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <Link to="/posterboard">
+          <Link to="/manage-events">
             <Card className="cursor-pointer hover:shadow-md smooth-transition">
               <CardContent className="p-6 text-center">
                 <Calendar className="h-8 w-8 text-primary mx-auto mb-2" />
