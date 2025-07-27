@@ -27,6 +27,7 @@ export default function ManageEvents() {
     category: "Environmental",
     badges: [] as string[],
     external_link: "",
+    duration: 1,
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -120,6 +121,17 @@ export default function ManageEvents() {
                 min={1}
                 value={form.max_volunteers}
                 onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="duration">Duration (in hours)</Label>
+              <Input
+                id="duration"
+                name="duration"
+                type="number"
+                min={1}
+                value={form.duration}
+                onChange={(e) => setForm({ ...form, duration: parseInt(e.target.value) || 1 })}
               />
             </div>
             <div>

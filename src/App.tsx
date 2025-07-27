@@ -13,9 +13,15 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import CharityProfile from "./pages/CharityProfile";
 import ManageEvents from "@/pages/ManageEvents";
+import CharityMicrosite from "./pages/CharityMicrosite";
+import { createClient } from "@supabase/supabase-js";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { supabase } from "./lib/supabaseClient";
+
 const queryClient = new QueryClient();
 
 const App = () => (
+  <SessionContextProvider supabaseClient={supabase}>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -30,12 +36,14 @@ const App = () => (
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/manage-events" element={<ManageEvents />} />
+          <Route path="/charity/:id/microsite" element={<CharityMicrosite />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </SessionContextProvider>
 );
 
 export default App;

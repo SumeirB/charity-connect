@@ -10,26 +10,48 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { supabase } from "../lib/supabaseClient";
+import { useSession } from "@supabase/auth-helpers-react";
+
 
 const PosterBoard = () => {
+  const session = useSession();
+  const userId = session?.user?.id;
+  
   const [events, setEvents] = useState<any[]>([]);
+  const [signedUpEventIds, setSignedUpEventIds] = useState<number[]>([]);
+
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<Date | undefined>();
   const [locationFilter, setLocationFilter] = useState<string>("");
 
   useEffect(() => {
     const fetchEvents = async () => {
-     const { data, error } = await supabase
+      const { data, error } = await supabase
         .from("volunteer_events")
-        .select(`
-          *, charities(id, name)
-        `)
+        .select("*, charities(name, id)")
         .order("date", { ascending: true });
       if (error) console.error("Error fetching events:", error);
       else setEvents(data || []);
     };
+
+    const fetchSignups = async () => {
+      if (!userId) return;
+
+      const { data, error } = await supabase
+        .from("volunteer_signups")
+        .select("event_id")
+        .eq("student_id", userId);
+
+      if (!error && data) {
+        const ids = data.map(signup => signup.event_id);
+        setSignedUpEventIds(ids);
+      }
+    };
+
     fetchEvents();
-  }, []);
+    fetchSignups();
+  }, [userId]);
+
 
   const filteredEvents = events.filter(event => {
     const matchesCategory = !categoryFilter || categoryFilter === "all" || event.category === categoryFilter;
@@ -61,9 +83,25 @@ const PosterBoard = () => {
     return event.max_volunteers - (event.volunteers?.length || 0);
   };
 
-  const handleRSVP = (eventId: number) => {
-    console.log(`RSVP for event ${eventId}`);
+  const handleRSVP = async (eventId: number) => {
+    if (!userId) {
+      alert("Please log in to RSVP.");
+      return;
+    }
+
+    const { error } = await supabase.from("volunteer_signups").insert({
+      student_id: userId,
+      event_id: eventId,
+    });
+
+    if (error) {
+      console.error("RSVP failed:", error);
+      alert("You may have already RSVP’d or an error occurred.");
+    } else {
+      setSignedUpEventIds([...signedUpEventIds, eventId]);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -168,7 +206,7 @@ const PosterBoard = () => {
                   </div>
                   <CardTitle className="text-xl mb-2 font-heading">{event.title}</CardTitle>
                   <CardDescription className="text-primary font-medium">
-                    <Link to={`/charity-profile?id=${event.charities?.id}`} className="hover:underline">
+                    <Link to={`/charity/${event.charity_id}/microsite`} className="hover:underline">
                       {event.charities?.name || "Charity"}
                     </Link>
                   </CardDescription>
@@ -191,9 +229,20 @@ const PosterBoard = () => {
                     </div>
                   </div>
                   <div className="flex space-x-3">
-                    <Button className="flex-1" disabled={getSpotsLeft(event) === 0} onClick={() => handleRSVP(event.id)}>
-                      {getSpotsLeft(event) === 0 ? "Full" : `RSVP (${getSpotsLeft(event)} spots left)`}
-                    </Button>
+                      {signedUpEventIds.includes(event.id) ? (
+                        <Button className="flex-1" disabled variant="outline">
+                          Signed Up!
+                        </Button>
+                      ) : (
+                        <Button
+                          className="flex-1"
+                          disabled={getSpotsLeft(event) === 0}
+                          onClick={() => handleRSVP(event.id)}
+                        >
+                          {getSpotsLeft(event) === 0 ? "Full" : `RSVP (${getSpotsLeft(event)} spots left)`}
+                        </Button>
+                      )}
+
                     {event.external_link && (
                       <a href={event.external_link} target="_blank" rel="noopener noreferrer" className="flex-1">
                         <Button variant="outline" className="w-full">Learn More</Button>

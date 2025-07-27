@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { signUp } from "@/lib/auth";
+import { supabase } from "@/lib/supabaseClient";
 
 
 const Login = () => {
@@ -23,43 +24,84 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate authentication - in real app this would integrate with Supabase
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
-      // Route based on user type
-      if (userType === "charity") {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error || !data.user) {
+        alert(`Login failed: ${error?.message}`);
+        return setIsLoading(false);
+      }
+
+      // ❓ fetch to see if this user is in charities
+      const { data: charityProfile } = await supabase
+        .from("charities")
+        .select("id")
+        .eq("auth_id", data.user.id)
+        .single();
+
+      if (charityProfile) {
         navigate("/charity-profile");
       } else {
         navigate("/profile");
       }
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch (err) {
+      alert("Unexpected error, check console.");
     } finally {
       setIsLoading(false);
     }
   };
-  
+
+
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      await signUp(email, password, name);
-
-      if (userType === "charity") {
-        navigate("/charity-profile");
-      } else {
-        navigate("/profile");
+      // 1) Sign up in Supabase Auth
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      if (signUpError || !data.user) {
+        console.error("Supabase sign-up error:", signUpError);
+        alert(`Sign-up failed: ${signUpError?.message}`);
+        return setIsLoading(false);
       }
+
+      // 2) Build the row to insert
+      const table = userType === "charity" ? "charities" : "students";
+      const row: any = { email, name };
+          // <-- ADD THIS LINE: -->
+      row.auth_id = data.user.id;
+      if (userType === "student") {
+        row.total_hours = 0;
+      }
+
+      // 3) Insert into your custom table
+      const { error: insertError } = await supabase.from(table).insert([row]);
+      // …inside handleSignUp, after calling supabase.from(table).insert…
+      if (insertError) {
+        console.error("Insert into", table, "failed:", insertError);
+        alert(`Could not create profile: ${insertError.message}`);
+        setIsLoading(false);
+        return;
+      }
+
+
+      // 4) Redirect
+      navigate(userType === "charity" ? "/charity-profile" : "/profile");
+
     } catch (error) {
-      console.error("Sign-up failed:", error);
-      alert("Error creating account. Please try again.");
+      console.error("Unexpected error in sign-up:", error);
+      alert("An unexpected error occurred. Check console.");
     } finally {
       setIsLoading(false);
     }
   };
+
 
 
   return (
